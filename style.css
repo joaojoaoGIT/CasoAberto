@@ -1,0 +1,707 @@
+/* ============================================================
+   CASO ABERTO — Estilos do jogo
+   Estética: delegacia anos 80/90, CRT, film grain, cores frias.
+   ============================================================ */
+
+:root {
+  --bg-0: #07090c;
+  --bg-1: #0d1218;
+  --bg-2: #131a22;
+  --ink: #d7e0ea;
+  --ink-dim: #8894a3;
+  --accent: #6fb3d1;      /* azul frio */
+  --accent-2: #d4a24c;    /* âmbar arquivo */
+  --danger: #c94a3a;
+  --danger-2: #ff6a52;
+  --paper: #e6ded0;
+  --border: rgba(214, 224, 236, 0.15);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: var(--ink);
+  font-family: "Inter", system-ui, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Telas ---------- */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+}
+.screen.active { display: block; }
+.hidden { display: none !important; }
+
+/* ---------- Efeitos ambientais ---------- */
+.vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    transparent 40%,
+    rgba(0,0,0,0.45) 75%,
+    rgba(0,0,0,0.88) 100%);
+  z-index: 40;
+}
+
+.grain {
+  position: absolute; inset: -50%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  animation: grainShift 1.2s steps(6) infinite;
+  z-index: 41;
+}
+
+@keyframes grainShift {
+  0%   { transform: translate(0,0); }
+  20%  { transform: translate(-3%, 2%); }
+  40%  { transform: translate(2%, -3%); }
+  60%  { transform: translate(-2%, -2%); }
+  80%  { transform: translate(3%, 1%); }
+  100% { transform: translate(0,0); }
+}
+
+.scanlines {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.18) 0px,
+    rgba(0,0,0,0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.35;
+  z-index: 42;
+}
+
+.crt-flicker {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: rgba(180, 210, 230, 0.03);
+  animation: flicker 6s infinite;
+  z-index: 43;
+}
+@keyframes flicker {
+  0%, 100% { opacity: 0.0; }
+  47%      { opacity: 0.0; }
+  48%      { opacity: 0.5; }
+  49%      { opacity: 0.0; }
+  70%      { opacity: 0.0; }
+  71%      { opacity: 0.4; }
+  72%      { opacity: 0.0; }
+}
+
+/* =========================================================
+   TELA INICIAL
+   ========================================================= */
+#title-screen {
+  background:
+    radial-gradient(ellipse at 50% 30%, #1a2532 0%, #0a0d11 60%, #05070a 100%);
+}
+
+.title-inner {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  animation: fadeUp 0.9s ease-out both;
+}
+
+.case-stamp {
+  font-family: "Special Elite", monospace;
+  color: var(--danger-2);
+  border: 2px solid var(--danger-2);
+  padding: 0.3rem 0.9rem;
+  transform: rotate(-3deg);
+  letter-spacing: 0.15em;
+  font-size: 0.85rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.game-title {
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 8vw, 6rem);
+  letter-spacing: 0.2em;
+  color: var(--paper);
+  text-shadow: 0 4px 20px rgba(111, 179, 209, 0.35);
+  margin-bottom: 0.5rem;
+}
+
+.game-subtitle {
+  font-family: "Special Elite", monospace;
+  color: var(--accent);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  margin-bottom: 2.5rem;
+}
+
+.game-brief {
+  color: var(--ink-dim);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+}
+
+.hint {
+  margin-top: 1.5rem;
+  color: var(--ink-dim);
+  font-family: "Special Elite", monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Botões ---------- */
+.pixel-btn {
+  font-family: "Oswald", sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  padding: 0.9rem 2rem;
+  background: linear-gradient(180deg, #1e2a36, #131c25);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.2s, background 0.2s, color 0.2s;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.pixel-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(111,179,209,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.pixel-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.pixel-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg, #2a4a5c, #17313f);
+  border-color: rgba(111, 179, 209, 0.4);
+  color: #eaf4fb;
+}
+.primary-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #345d75, #1c4054);
+}
+
+.danger-btn {
+  background: linear-gradient(180deg, #6b1e17, #3d0e0a);
+  border-color: rgba(255, 106, 82, 0.5);
+  color: #fbeae7;
+}
+.danger-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #8a251b, #501310);
+  box-shadow: 0 6px 14px rgba(201, 74, 58, 0.35);
+}
+
+.btn-icon { margin-right: 0.4rem; }
+
+/* =========================================================
+   TELA PRINCIPAL — LINEUP
+   ========================================================= */
+#game-screen {
+  background: #05070a;
+}
+
+.lineup-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+.bg-img, .suspects-img {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  filter:
+    brightness(0.55)
+    contrast(1.1)
+    saturate(0.7)
+    sepia(0.08);
+}
+
+.suspects-img {
+  object-fit: contain;
+  object-position: center 60%;
+  filter:
+    brightness(0.75)
+    contrast(1.05)
+    saturate(0.75)
+    sepia(0.05)
+    drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+}
+
+/* Áreas clicáveis — sem borda retangular, apenas brilho azulado suave */
+.suspect-hit {
+  position: absolute;
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+}
+.suspect-hit::before {
+  content: "";
+  position: absolute;
+  inset: -8% -6%;
+  background: radial-gradient(
+    ellipse at 50% 45%,
+    rgba(130, 205, 240, 0.45) 0%,
+    rgba(90, 165, 215, 0.22) 38%,
+    transparent 72%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  filter: blur(8px);
+  pointer-events: none;
+}
+.suspect-hit:hover::before { opacity: 1; }
+.suspect-hit:hover { transform: translateY(-3px); }
+.suspect-hit:hover .hit-label { opacity: 1; transform: translateY(0); }
+
+.hit-label {
+  font-family: "Special Elite", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  background: rgba(7, 12, 18, 0.85);
+  padding: 4px 10px;
+  border: 1px solid rgba(111,179,209,0.4);
+  border-radius: 2px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s, transform 0.25s;
+  white-space: nowrap;
+}
+
+/* HUD */
+.hud-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 1.2rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 30;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
+  animation: fadeUp 0.6s ease-out both;
+}
+
+.hud-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(13, 18, 24, 0.75);
+  border: 1px solid var(--border);
+  padding: 0.6rem 1rem;
+  border-radius: 2px;
+  backdrop-filter: blur(4px);
+}
+.badge-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--danger-2);
+  box-shadow: 0 0 8px var(--danger-2);
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+.badge-label {
+  font-family: "Oswald", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+}
+.badge-name {
+  font-family: "Special Elite", monospace;
+  font-size: 0.85rem;
+  color: var(--ink);
+}
+
+.hud-instructions {
+  font-family: "Special Elite", monospace;
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hud-bottom {
+  position: absolute;
+  bottom: 1.5rem; left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 30;
+  animation: fadeUp 0.7s ease-out both;
+}
+
+/* =========================================================
+   DIÁLOGO (Visual Novel)
+   ========================================================= */
+#dialogue-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 2rem 2rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.dialogue-box {
+  width: 100%;
+  max-width: 960px;
+  background:
+    linear-gradient(180deg, rgba(20, 28, 36, 0.98), rgba(10, 14, 20, 0.98));
+  border: 1px solid rgba(111, 179, 209, 0.35);
+  border-radius: 4px;
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 0 0 4px rgba(0,0,0,0.5);
+  padding: 1.5rem;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.dialogue-box::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed rgba(111, 179, 209, 0.15);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dialogue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.name-tag {
+  font-family: "Oswald", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-2);
+  text-transform: uppercase;
+}
+
+.close-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink-dim);
+  width: 32px; height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.close-btn:hover {
+  color: var(--danger-2);
+  border-color: var(--danger-2);
+  transform: rotate(90deg);
+}
+
+.dialogue-questions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.question-btn {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  background: rgba(15, 22, 30, 0.7);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+  position: relative;
+}
+.question-btn::before {
+  content: "› ";
+  color: var(--accent);
+  margin-right: 0.3rem;
+}
+.question-btn:hover {
+  background: rgba(30, 45, 60, 0.9);
+  border-color: rgba(111, 179, 209, 0.5);
+  transform: translateX(4px);
+}
+.question-btn.asked { opacity: 0.55; }
+
+.dialogue-text-wrap {
+  min-height: 110px;
+  padding: 1rem 1.2rem;
+  background: rgba(0, 0, 0, 0.35);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  display: none;
+}
+.dialogue-text-wrap.visible { display: block; animation: fadeIn 0.2s; }
+
+.dialogue-text {
+  font-family: "Special Elite", monospace;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--paper);
+}
+
+.dialogue-indicator {
+  position: absolute;
+  bottom: 10px; right: 14px;
+  color: var(--accent-2);
+  font-size: 0.9rem;
+  animation: bounce 1s infinite;
+  opacity: 0;
+}
+.dialogue-indicator.show { opacity: 1; }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+
+.dialogue-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.8rem;
+  font-family: "Special Elite", monospace;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+}
+
+.mini-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink-dim);
+  padding: 0.4rem 0.8rem;
+  font-family: "Special Elite", monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.mini-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* =========================================================
+   TELA DE ACUSAÇÃO
+   ========================================================= */
+#accuse-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: fadeIn 0.3s;
+}
+
+.accuse-inner {
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+  animation: slideUp 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.accuse-title {
+  font-family: "Oswald", sans-serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  letter-spacing: 0.25em;
+  color: var(--danger-2);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 20px rgba(255, 106, 82, 0.4);
+}
+.accuse-sub {
+  color: var(--ink-dim);
+  font-family: "Special Elite", monospace;
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+
+.accuse-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.accuse-card {
+  background: rgba(13, 18, 24, 0.8);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.accuse-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 24px rgba(111,179,209,0.15);
+}
+.accuse-card.selected {
+  border-color: var(--danger-2);
+  box-shadow: 0 0 0 2px var(--danger-2), 0 10px 30px rgba(255,106,82,0.25);
+  background: rgba(60, 20, 15, 0.5);
+}
+
+.portrait {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-image: url("suspeitos.png");
+  /* Zoom no rosto: imagem 6x mais larga que o card e altura auto para preservar proporção */
+  background-size: 600% auto;
+  background-repeat: no-repeat;
+  background-color: #0a0e13;
+  border: 1px solid var(--border);
+  filter: brightness(0.95) contrast(1.05) saturate(0.85);
+  margin-bottom: 0.8rem;
+}
+/* Posiciona horizontalmente o centro de cada suspeito e verticalmente no rosto */
+.portrait.p1 { background-position: 11% 8%; }
+.portrait.p2 { background-position: 32% 14%; }
+.portrait.p3 { background-position: 61% 6%; }
+.portrait.p4 { background-position: 87% 6%; }
+
+.card-name {
+  font-family: "Oswald", sans-serif;
+  letter-spacing: 0.15em;
+  color: var(--ink);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.accuse-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* =========================================================
+   TELA DE RESULTADO
+   ========================================================= */
+#result-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background:
+    radial-gradient(ellipse at center, #12181f 0%, #05070a 80%);
+  animation: fadeIn 0.4s;
+}
+
+.result-inner {
+  text-align: center;
+  max-width: 640px;
+  animation: slideUp 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.result-stamp {
+  display: inline-block;
+  font-family: "Oswald", sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.35em;
+  padding: 0.6rem 1.4rem;
+  border: 3px solid var(--accent);
+  color: var(--accent);
+  transform: rotate(-4deg);
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+.result-stamp.fail {
+  border-color: var(--danger-2);
+  color: var(--danger-2);
+}
+
+#result-title {
+  font-family: "Oswald", sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  color: var(--paper);
+}
+
+#result-text {
+  color: var(--ink-dim);
+  font-family: "Special Elite", monospace;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+@media (max-width: 800px) {
+  .accuse-grid { grid-template-columns: repeat(2, 1fr); }
+  .dialogue-questions { grid-template-columns: 1fr; }
+  .hud-instructions { display: none; }
+  .hud-top { padding: 1rem; }
+}
