@@ -418,9 +418,12 @@ creditsBackBtn.textContent = "Voltar";
 creditsBackBtn.addEventListener("click", returnToTitle);
 document.body.appendChild(creditsBackBtn);
 
-setTimeout(() => {
-  showCreditsFinalState();
-}, 20000);
+const creditsScroll = document.querySelector(".credits-scroll");
+if (creditsScroll) {
+  creditsScroll.addEventListener("animationend", () => {
+    showCreditsFinalState();
+  }, { once: true });
+}
 
 resultRestart.addEventListener("click", () => {
   sfx.click();
