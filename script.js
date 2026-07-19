@@ -8,6 +8,7 @@ const state = {
   typing: false,
   fullText: "",
   typeTimer: null,
+  eventTimer: null,
   askedByS: { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() },
   selectedAccused: null,
   audioReady: false
@@ -37,6 +38,11 @@ const resultStamp   = $("result-stamp");
 const resultTitle   = $("result-title");
 const resultText    = $("result-text");
 const resultRestart = $("result-restart");
+const creditsScreen = $("credits-screen");
+const creditsFlowerBtn = $("credits-flower-btn");
+const creditsJokeNote = $("credits-joke-note");
+const gameEvent     = $("game-event");
+const gameEventText = $("game-event-text");
 
 // ============================================================
 // ÁUDIO — sintetizado via WebAudio (sem dependências externas)
@@ -100,6 +106,7 @@ startBtn.addEventListener("click", () => {
   startAmbient();
   titleScreen.classList.remove("active");
   gameScreen.classList.add("active");
+  showGameEvent("O relatório inicial aponta que um suspeito descreveu os fatos em um tempo verbal diferente dos demais.");
 });
 
 // ============================================================
@@ -158,6 +165,18 @@ function showAnswer(text) {
   dlgTextWrap.classList.add("visible");
   dlgIndicator.classList.remove("show");
   typeText(text);
+}
+
+function showGameEvent(message) {
+  if (!gameEvent || !gameEventText) return;
+
+  gameEventText.textContent = message;
+  gameEvent.classList.remove("hidden");
+
+  if (state.eventTimer) clearTimeout(state.eventTimer);
+  state.eventTimer = setTimeout(() => {
+    gameEvent.classList.add("hidden");
+  }, 3500);
 }
 
 function typeText(text) {
@@ -264,18 +283,144 @@ function showResult(win) {
     resultStamp.classList.remove("fail");
     resultTitle.textContent = "Você encontrou o assassino.";
     resultText.textContent =
-      `João Pedro Arújo confessou o crime na delegacia. As pistas estavam nas próprias palavras dele: conhecia demais a rotina da vítima, andava perto do armazém à noite e quase disse "faca" durante o interrogatório. Bom trabalho, detetive. Além de sempre errar o Simple Present na 3ª pessoa, ele também não sabia conjugar o verbo "to know" corretamente.`;
+      `João Pedro Arújo confessou o crime na delegacia. As pistas estavam nas próprias palavras dele: conhecia demais a rotina da vítima, andava perto do armazém à noite e quase disse "faca" durante o interrogatório. Bom trabalho, detetive. Além de descrever os fatos no passado, ele também deixou escapar detalhes que conectavam seu relato à cena do crime.`;
     sfx.success();
+    setTimeout(() => {
+      resultScreen.classList.add("hidden");
+      creditsScreen.classList.remove("hidden");
+      startCreditsMusic();
+    }, 900);
   } else {
     resultStamp.textContent = "CASO FALHO";
     resultStamp.classList.add("fail");
     resultTitle.textContent = "Você acusou a pessoa errada.";
     resultText.textContent =
-      `O verdadeiro culpado escapou pela porta dos fundos. Reveja as respostas — o Simple Present dos suspeitos revela hábitos, rotinas e pequenas contradições. Uma delas era a pista. O suspeito correto comete erros clássicos de Simple Present na 3ª pessoa do singular, como "He work" (falta o -s), "He take" (falta -s) e "He don't" (deveria ser doesn't).`;
+      `O verdadeiro culpado escapou pela porta dos fundos. Reveja as respostas — o tempo verbal usado pelos suspeitos revela hábitos, rotinas e pequenas contradições. O suspeito correto descreveu os fatos no passado, com formas como "worked", "took" e "didn't".`;
     sfx.fail();
   }
   resultScreen.classList.remove("hidden");
 }
+
+let creditsAudio = null;
+let creditsTimer = null;
+let creditsPlayer = null;
+let creditsFinalized = false;
+
+function onCreditsPlayerStateChange(event) {
+  if (event.data === window.YT?.PlayerState?.ENDED) {
+    returnToTitle();
+  }
+}
+
+function onCreditsPlayerReady() {
+  if (creditsPlayer) {
+    creditsPlayer.setPlaybackRate(2);
+  }
+}
+
+function startCreditsMusic() {
+  if (creditsPlayer) return;
+
+  if (typeof window.YT === "undefined" || typeof window.YT.Player !== "function") {
+    return;
+  }
+
+  creditsPlayer = new window.YT.Player("credits-music-player", {
+    height: "0",
+    width: "0",
+    videoId: "fgH4GvL-i4g",
+    playerVars: {
+      autoplay: 1,
+      controls: 0,
+      loop: 1,
+      playlist: "fgH4GvL-i4g",
+      modestbranding: 1,
+      rel: 0,
+      start: 5,
+      playsinline: 1
+    },
+    events: {
+      onReady: onCreditsPlayerReady,
+      onStateChange: onCreditsPlayerStateChange
+    }
+  });
+}
+
+function resetCredits() {
+  if (creditsPlayer) {
+    creditsPlayer.stopVideo();
+    creditsPlayer.destroy();
+    creditsPlayer = null;
+  }
+  if (creditsTimer) clearTimeout(creditsTimer);
+  creditsTimer = null;
+  creditsFinalized = false;
+}
+
+function returnToTitle() {
+  resetCredits();
+  resultScreen.classList.add("hidden");
+  creditsScreen.classList.add("hidden");
+  gameScreen.classList.remove("active");
+  titleScreen.classList.add("active");
+}
+
+function showCreditsFinalState() {
+  if (creditsFinalized) return;
+  creditsFinalized = true;
+  const scroll = document.querySelector(".credits-scroll");
+  if (scroll) {
+    scroll.classList.add("is-final");
+    scroll.style.animation = "none";
+    scroll.style.transform = "translateY(0)";
+  }
+  const creditsContent = document.querySelector(".credits-content");
+  if (creditsContent) {
+    creditsContent.classList.add("credits-content-final");
+  }
+  const backBtn = document.querySelector(".credits-side-btn");
+  if (backBtn) {
+    backBtn.classList.add("visible");
+  }
+}
+
+function createFlowerBurst(x, y) {
+  const emojis = ["🌸", "🌷", "💐", "🌼"];
+  const emoji = document.createElement("div");
+  emoji.className = "credits-emoji";
+  emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  emoji.style.left = `${x}px`;
+  emoji.style.top = `${y}px`;
+  document.body.appendChild(emoji);
+  setTimeout(() => emoji.remove(), 1800);
+}
+
+function launchFlowerStorm() {
+  const count = 30;
+  for (let i = 0; i < count; i += 1) {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight * 0.35;
+    setTimeout(() => createFlowerBurst(x, y), i * 35);
+  }
+}
+
+if (creditsFlowerBtn) {
+  creditsFlowerBtn.addEventListener("click", () => {
+    launchFlowerStorm();
+    const rect = creditsFlowerBtn.getBoundingClientRect();
+    createFlowerBurst(rect.left + rect.width / 2, rect.top);
+  });
+}
+
+const creditsBackBtn = document.createElement("button");
+creditsBackBtn.className = "credits-side-btn";
+creditsBackBtn.textContent = "Voltar";
+creditsBackBtn.addEventListener("click", returnToTitle);
+document.body.appendChild(creditsBackBtn);
+
+setTimeout(() => {
+  showCreditsFinalState();
+}, 20000);
 
 resultRestart.addEventListener("click", () => {
   sfx.click();
@@ -283,6 +428,8 @@ resultRestart.addEventListener("click", () => {
   state.askedByS = { 1: new Set(), 2: new Set(), 3: new Set(), 4: new Set() };
   state.selectedAccused = null;
   resultScreen.classList.add("hidden");
+  creditsScreen.classList.add("hidden");
+  resetCredits();
   gameScreen.classList.remove("active");
   titleScreen.classList.add("active");
 });

@@ -53,6 +53,13 @@
     </div>
 
     <!-- HUD superior -->
+    <div id="game-event" class="game-event hidden">
+      <div class="game-event-card">
+        <div class="game-event-title">EVENTO NA CENA</div>
+        <p id="game-event-text">O relatório inicial aponta que um suspeito descreveu os fatos em um tempo verbal diferente dos demais.</p>
+      </div>
+    </div>
+
     <div class="hud-top">
       <div class="hud-badge">
         <span class="badge-dot"></span>
@@ -131,6 +138,81 @@
     </div>
   </div>
 
+  <div id="credits-screen" class="hidden">
+    <div id="credits-music-player"></div>
+    <div class="credits-overlay"></div>
+    <div class="credits-content">
+      <div class="credits-scroll">
+        <div class="credits-title">CASO ABERTO</div>
+        <div class="credits-subtitle">Uma produção fictícia de investigação</div>
+
+        <div class="credits-section">
+          <div class="credits-label">Direção</div>
+          <div class="credits-name">João Pedro Cassanego</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Roteiro</div>
+          <div class="credits-name">Mikael Perin</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Edição</div>
+          <div class="credits-name">João Pedro Cassanego</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Trilha Sonora</div>
+          <div class="credits-name">Mikael Perin</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Assistente de Direção</div>
+          <div class="credits-name">João Pedro Araújo</div>
+        </div>
+
+        <div class="credits-section credits-final-section">
+          <div class="credits-label">Participação Especial</div>
+          <div class="credits-name credits-name-big">PARTICIPAÇÃO ESPECIAL:</div>
+          <div class="credits-name credits-name-big">João Pedro Araújo</div>
+          <div class="credits-role">amigo querido dos autores</div>
+          <img class="credits-image" src="luto.png" alt="Imagem de luto de João Pedro Araújo" />
+          <div class="credits-actions">
+            <button id="credits-flower-btn" class="flower-btn">Jogar Rosas</button>
+          </div>
+          <div id="credits-joke-note" class="credits-joke-note">(apenas uma brincadeira com nosso grande amigo)</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Elenco de Apoio</div>
+          <div class="credits-name">Aldo, o operador do rádio</div>
+          <div class="credits-name">Catarina, a digitadora das chaves</div>
+          <div class="credits-name">Rafael, o responsável pelo café</div>
+          <div class="credits-name">Mauro, o guarda da porta</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Papeis Especiais</div>
+          <div class="credits-name">Quem organizou as pistas</div>
+          <div class="credits-role">João Pedro Cassanego</div>
+          <div class="credits-name">Quem segurou o silêncio</div>
+          <div class="credits-role">Mikael Perin</div>
+          <div class="credits-name">Quem registrou as chaves</div>
+          <div class="credits-role">Catarina</div>
+        </div>
+
+        <div class="credits-section">
+          <div class="credits-label">Agradecimentos</div>
+          <div class="credits-name">A todos os que acreditaram na cena</div>
+          <div class="credits-name">E a quem nunca deixou a luz apagar</div>
+        </div>
+
+        <div class="credits-end">FIM</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script src="dialogues.js"></script>
   <script src="script.js"></script>
 </body>

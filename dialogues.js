@@ -1,9 +1,7 @@
 /* ============================================================
    Dados dos suspeitos e diálogos
    - 3 suspeitos falam Simple Present CORRETO.
-   - O culpado (#4) comete erros clássicos de Simple Present:
-       * verbo sem -s na 3ª pessoa: "He work" / "She cook"
-       * "don't" no lugar de "doesn't": "He don't see" / "She don't know"
+   - O culpado (#4) fala no passado, usando formas como "worked", "took" e "didn't".
    ============================================================ */
 
 const SUSPECTS = {
@@ -43,17 +41,15 @@ const SUSPECTS = {
   4: {
     // ==========================================================
     // CULPADO — Suspeito 4
-    // Comete erros de Simple Present na 3ª pessoa do singular.
+    // Fala no passado para descrever os fatos.
     // ==========================================================
     name: "João Pedro Araújo",
     role: "Student",
     dialogues: {
-      // ✘ "He work" (falta o -s), "He take" (falta -s), "He don't" (deveria ser doesn't)
       victim:
-        "Oxente, i don't really know him. He work late every night. He take the same street at 11 p.m. He don't see anyone around.",
-      // ✘ "My mom cook" (falta -s), "She don't know" (deveria ser doesn't)
+        "I don't really know him. He worked late every night. He took the same street at 11 p.m. He didn't see anyone around. He left the bakery before midnight. He never spoke to me.",
       suspicion:
-        "Oxente, i am just a student. My mom cook dinner every night. She don't know I go out late. That's all."
+        "I was just a student. My mom cooked dinner every night. She didn't know I went out late. I met him sometimes. He didn't trust me. That's all."
     }
   }
 };
